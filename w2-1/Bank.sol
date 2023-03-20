@@ -10,9 +10,11 @@ contract Bank {
 
     function withdraw() public{
         address payable account = payable(msg.sender);
-        (bool success,) = account.call{value: balances[msg.sender]}(new bytes(0));
-        require(success, "Eth transfer failed!");
+        uint balance  = balances[msg.sender];
         balances[msg.sender] = 0;
+        // 注意重入攻击
+        (bool success,) = account.call{value: balance}(new bytes(0));
+        require(success, "Eth transfer failed!");
     }
 
 }
